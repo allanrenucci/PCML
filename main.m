@@ -9,11 +9,7 @@ y = y_train;
 tX = [ones(length(y), 1) X];
 %betaLS = leastSquares(y, tX);
 
-% Normalize
-meanX = mean(X);
-X = X - ones(size(X)) * diag(meanX);
-stdX = std(X);
-X = X ./ (ones(size(X)) * diag(stdX));
+X = normalize(X);
 
 tX = [ones(length(y), 1) X];
 betaLS = leastSquares(y, tX);
