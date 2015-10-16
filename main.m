@@ -12,6 +12,8 @@ tX = [ones(length(y), 1) X];
 X = normalize(X);
 
 tX = [ones(length(y), 1) X];
-betaLS = leastSquares(y, tX);
 alpha = 0.1;
+lambda = 1;
+betaLS = leastSquares(y, tX);
 betaGD = leastSquaresGD(y, tX, alpha);
+ridge = ridgeRegression(y, tX, lambda);
