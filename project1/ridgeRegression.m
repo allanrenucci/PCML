@@ -8,4 +8,3 @@ L = [zeros(1, degree + 1); zeros(degree, 1) lIm];
 beta = (phiX' * phiX + L) \ phiX' * y;
 
 end
-
