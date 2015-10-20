@@ -6,9 +6,7 @@ load('PuntaCana_classification.mat');
 X = X_train;
 y = y_train;
 
-tX = [ones(length(y), 1) X];
-%betaLS = leastSquares(y, tX);
-
+y(y == -1) = 0;
 X = normalize(X);
 
 tX = [ones(length(y), 1) X];
