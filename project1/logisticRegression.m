@@ -5,9 +5,8 @@ beta = zeros(size(tX, 2), 1);
 maxIter = 10000;
 
 for i = 1:maxIter
-    %e = y - tX * beta;
     sigma = 1./(1+exp(-(tX * beta)));
-    g = -tX' * (sigma - y);
+    g = (tX' * (sigma - y)) / N;
    
     beta = beta - alpha * g;
     
@@ -20,3 +19,4 @@ for i = 1:maxIter
 end
 
 end
+
