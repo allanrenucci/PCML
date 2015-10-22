@@ -1,10 +1,9 @@
 function beta = ridgeRegression(y, tX, lambda)
 
-degree = 4;
-phiX = tX; %phi(tX, degree);
+degree = size(tX, 2) - 1;
 lIm = lambda * eye(degree);
 L = [zeros(1, degree + 1); zeros(degree, 1) lIm];
 
-beta = (phiX' * phiX + L) \ phiX' * y;
+beta = (tX' * tX + L) \ tX' * y;
 
 end

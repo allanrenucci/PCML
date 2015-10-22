@@ -14,5 +14,6 @@ alpha = 0.1;
 lambda = 1;
 %betaLS = leastSquares(y, tX);
 %betaGD = leastSquaresGD(y, tX, alpha);
-%betaRR = ridgeRegression(y, tX, lambda);
+%betaRR = ridgeRegression(y, phi(X, 4), lambda);
 betaLR = logisticRegression(y, tX, alpha);
+betaPLR = penLogisticRegression(y, tX, alpha, lambda);
