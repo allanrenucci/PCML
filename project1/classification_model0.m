@@ -1,4 +1,4 @@
-% ridge regression
+% logistic regression
 
 clear all
 load('PuntaCana_classification.mat');
@@ -32,6 +32,7 @@ for k = 1:K
     
     % Set to 0 values that are -1
     yTr(yTr == -1) = 0;
+    yTe(yTe == -1) = 0;
     if mean(yTr) > 0.5
         yR = 1;
     else

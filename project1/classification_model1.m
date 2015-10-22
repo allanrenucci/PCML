@@ -1,4 +1,4 @@
-% ridge regression
+% logistic regression
 
 clear all
 load('PuntaCana_classification.mat');
@@ -33,6 +33,7 @@ for k = 1:K
     
     % Set to 0 values that are -1
     yTr(yTr == -1) = 0;
+    yTe(yTe == -1) = 0;
     
     % form tX
     tXTr = [ones(size(XTr, 1), 1) XTr];
