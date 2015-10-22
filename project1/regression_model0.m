@@ -1,17 +1,13 @@
-% Linear regression using least square gradient descent
+% Constant regression using mean y
 
 clear all
 load('PuntaCana_regression.mat');
 
 % Constants
-alpha = 0.1;
-lambda = 1;
 K = 5;
 
 X = X_train;
 y = y_train;
-
-X = normalize(X);
 
 % split data in K fold (we will only create indices)
 setSeed(1);
@@ -28,21 +24,23 @@ for k = 1:K
     idxTr = idxCV([1:k-1 k+1:end],:);
     idxTr = idxTr(:);
     yTe = y(idxTe);
-    XTe = X(idxTe,:);
     yTr = y(idxTr);
     XTr = X(idxTr,:);
     
-    % form tX
-    tXTr = [ones(length(yTr), 1) XTr];
-	tXTe = [ones(length(yTe), 1) XTe];
+    yMean = mean(yTr);
     
-    beta = leastSquaresGD(yTr, tXTr, alpha);
+    e = yTr - yMean;
+    L = e' * e / (2 * length(yTr));
     
-	% training and test MSE(INSERT CODE)
-	mseTrSub(k) = sqrt(2*computeCost(yTr,tXTr,beta));
+	% training and test MSE
+    e = yTr - yMean;
+    L = e' * e / (2 * length(yTr));
+	mseTrSub(k) = sqrt(2*L);
 
 	% testing MSE using least squares
-	mseTeSub(k) = sqrt(2*computeCost(yTe,tXTe,beta));
+    e = yTe - yMean;
+    L = e' * e / (2 * length(yTe));
+	mseTeSub(k) = sqrt(2*L);
 end
 
 mseTr = mean(mseTrSub);
