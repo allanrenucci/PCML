@@ -15,7 +15,7 @@ N = size(y,1);
 idx = randperm(N);
 Nk = floor(N/K);
 for k = 1:K
-	idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
+    idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
 end
 
 for k = 1:K
@@ -32,15 +32,15 @@ for k = 1:K
     e = yTr - yMean;
     L = e' * e / (2 * length(yTr));
     
-	% training and test MSE
+    % training and test MSE
     e = yTr - yMean;
     L = e' * e / (2 * length(yTr));
-	mseTrSub(k) = sqrt(2*L);
+    mseTrSub(k) = sqrt(2*L);
 
-	% testing MSE using least squares
+    % testing MSE using least squares
     e = yTe - yMean;
     L = e' * e / (2 * length(yTe));
-	mseTeSub(k) = sqrt(2*L);
+    mseTeSub(k) = sqrt(2*L);
 end
 
 mseTr = mean(mseTrSub);

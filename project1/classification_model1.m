@@ -18,7 +18,7 @@ N = size(y,1);
 idx = randperm(N);
 Nk = floor(N/K);
 for k = 1:K
-	idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
+    idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
 end
 
 for k = 1:K
@@ -37,15 +37,15 @@ for k = 1:K
     
     % form tX
     tXTr = [ones(size(XTr, 1), 1) XTr];
-	tXTe = [ones(size(XTe, 1), 1) XTe];
+    tXTe = [ones(size(XTe, 1), 1) XTe];
     
     beta = logisticRegression(yTr, tXTr, alpha);
     
-	% training and test MSE(INSERT CODE)
-	mleTrSub(k) = LogisticRegressionCost(yTr, tXTr, beta);
+    % training and test MSE(INSERT CODE)
+    mleTrSub(k) = LogisticRegressionCost(yTr, tXTr, beta);
 
-	% testing MSE using least squares
-	mleTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
+    % testing MSE using least squares
+    mleTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
 end
 
 mleTr = mean(mleTrSub);

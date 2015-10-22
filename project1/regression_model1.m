@@ -19,7 +19,7 @@ N = size(y,1);
 idx = randperm(N);
 Nk = floor(N/K);
 for k = 1:K
-	idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
+    idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
 end
 
 for k = 1:K
@@ -34,15 +34,15 @@ for k = 1:K
     
     % form tX
     tXTr = [ones(length(yTr), 1) XTr];
-	tXTe = [ones(length(yTe), 1) XTe];
+    tXTe = [ones(length(yTe), 1) XTe];
     
     beta = leastSquaresGD(yTr, tXTr, alpha);
     
-	% training and test MSE(INSERT CODE)
-	mseTrSub(k) = sqrt(2*computeCost(yTr,tXTr,beta));
+    % training and test MSE(INSERT CODE)
+    mseTrSub(k) = sqrt(2*computeCost(yTr,tXTr,beta));
 
-	% testing MSE using least squares
-	mseTeSub(k) = sqrt(2*computeCost(yTe,tXTe,beta));
+    % testing MSE using least squares
+    mseTeSub(k) = sqrt(2*computeCost(yTe,tXTe,beta));
 end
 
 mseTr = mean(mseTrSub);

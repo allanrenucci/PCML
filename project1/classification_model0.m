@@ -17,7 +17,7 @@ N = size(y,1);
 idx = randperm(N);
 Nk = floor(N/K);
 for k = 1:K
-	idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
+    idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
 end
 
 for k = 1:K
