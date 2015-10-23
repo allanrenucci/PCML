@@ -11,7 +11,6 @@ for i = 1:maxIter
     beta = beta - alpha * g;
     
     if g' * g < 1e-5
-        disp('converged');
         break;
     end
     

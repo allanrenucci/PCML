@@ -1,22 +1,21 @@
 clear all
 
-load('PuntaCana_classification.mat');
-%load('PuntaCana_regression.mat');
+%load('PuntaCana_classification.mat');
+load('PuntaCana_regression.mat');
 
 X = X_train;
 y = y_train;
 
-y(y == -1) = 0;
+%y(y == -1) = 0;
 X = normalize(X);
 
-[XTr, yTr, XTe, yTe] = split(y, X, 0.5);
+figure;
+title('col i and y_train');
 
-tXTr = [ones(length(yTr), 1) XTr];
-alpha = 0.1;
-lambda = 1;
-betaLS = leastSquares(yTr, tXTr);
-betaGD = leastSquaresGD(yTr, tXTr, alpha);
-betaRR = ridgeRegression(yTr, phi(XTr, 4), lambda);
-betaLR = logisticRegression(yTr, tXTr, alpha);
-betaPLR = penLogisticRegression(yTr, tXTr, alpha, lambda);
-
+D = size(X, 2);
+for i= 1:D
+     subplot(6,11,i);
+     plot(X_train(:,i),y_train,'b.');
+     hold on;
+     %legend(['col ' num2str(i) ''], 'y');
+end

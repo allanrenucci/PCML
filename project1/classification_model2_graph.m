@@ -4,8 +4,8 @@ clear all
 load('PuntaCana_classification.mat');
 
 % Constants
-alphaValues = 0.1:0.05:0.5
-lambdaValues = 0.1:0.05:2.0
+alphaValues = 0.1:0.05:0.5;
+lambdaValues = 0.1:0.05:2.0;
 K = 5;
 
 X = X_train;
