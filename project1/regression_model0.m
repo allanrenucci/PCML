@@ -34,15 +34,18 @@ for k = 1:K
     
     % training and test MSE
     e = yTr - yMean;
-    L = e' * e / (2 * length(yTr));
-    mseTrSub(k) = sqrt(2*L);
+    L = e' * e / length(yTr);
+    mseTrSub(k) = sqrt(L);
 
-    % testing MSE using least squares
+    % testing RMSE using least squares
     e = yTe - yMean;
-    L = e' * e / (2 * length(yTe));
-    mseTeSub(k) = sqrt(2*L);
+    L = e' * e / length(yTe);
+    mseTeSub(k) = sqrt(L);
 end
 
+% Mean MSE over K fold
 mseTr = mean(mseTrSub);
 mseTe = mean(mseTeSub);
+
+fprintf('mseTr=%f, mseTe=%f \n', mseTr, mseTe);
 

@@ -5,7 +5,6 @@ load('PuntaCana_regression.mat');
 
 % Constants
 alpha = 0.1;
-lambda = 1;
 K = 5;
 
 X = X_train;
@@ -38,13 +37,16 @@ for k = 1:K
     
     beta = leastSquaresGD(yTr, tXTr, alpha);
     
-    % training and test MSE(INSERT CODE)
-    mseTrSub(k) = sqrt(2*computeCost(yTr,tXTr,beta));
+    % RMSE on training set
+    mseTrSub(k) = computeRMSE(yTr,tXTr,beta);
 
-    % testing MSE using least squares
-    mseTeSub(k) = sqrt(2*computeCost(yTe,tXTe,beta));
+    % RMSE on test set
+    mseTeSub(k) = computeRMSE(yTe,tXTe,beta);
 end
 
+% Mean MSE over K fold
 mseTr = mean(mseTrSub);
 mseTe = mean(mseTeSub);
+
+fprintf('mseTr=%f, mseTe=%f \n', mseTr, mseTe);
 
