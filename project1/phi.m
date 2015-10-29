@@ -1,9 +1,9 @@
-function phi = phi(X,degree)
+function phi = phi(X, degree)
 % build matrix Phi for polynomial regression of a given degree
+    phi = ones(size(X, 1), 1);
     for k = 1:degree
-        Xpoly(:, k) = sum(X.^k, 2);
+        phi = [phi X.^k];
     end
     
-    phi = [ones(size(X, 1), 1) Xpoly];
 end
 
