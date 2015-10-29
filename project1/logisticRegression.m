@@ -13,8 +13,7 @@ for i = 1:maxIter
     if g' * g < 1e-5
         break;
     end
-    
-        
+  
 end
 
 end

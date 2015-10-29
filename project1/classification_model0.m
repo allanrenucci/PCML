@@ -6,7 +6,7 @@ load('PuntaCana_classification.mat');
 % Constants
 K = 5;
 
-X = X_train;
+X = dummyEncode2(X_train, [7 9 15 26 32]);
 y = y_train;
 
 X = normalize(X);
@@ -43,9 +43,5 @@ for k = 1:K
     eTeSub(k) = sum(yTe * yR - log(1 + exp(yR)));
 end
 
-eTr = mean(eTrSub);
-eTe = mean(eTeSub);
-
-%mseTr = mean(mseTrSub);
-%mseTe = mean(mseTeSub);
-
+mleTr = mean(eTrSub);
+mleTe = mean(eTeSub);

@@ -7,7 +7,9 @@ load('PuntaCana_classification.mat');
 % Constants
 K = 5;
 
-X = X_train;
+[indep, colonnes] = licols(X_train, 1e-3);
+
+X = indep; %dummyEncode2(X_train, [7 9 15 26 32]);
 y = y_train;
 
 X = normalize(X);
@@ -52,11 +54,34 @@ for n = 1:length(alphaValues)
 
         % testing MSE using least squares
         mleTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
+        
+        %%%
+        %%%
+        %%%
+        correct = 0;
+        for z = 1:length(yTe)
+            tmp = tXTe(z, :) * beta;
+            if tmp < 0.5
+                tmp = 0;
+            else
+                tmp = 1;
+            end
+            %fprintf('Predicted = %d, actual = %d\n', tmp, yTe(n));
+            if tmp == yTe(z)
+                correct = correct + 1;
+            end
+        end
+        %%%
+        %%%
+        %%%
+        
+        perf(k) = correct / length(yTe);
     end
 
     mleTr(n) = mean(mleTrSub);
     mleTe(n) = mean(mleTeSub);
+    performance(n) = mean(perf);
     
 end
 
-plot(alphaValues, mleTr, '.', alphaValues, mleTe, 'x');
+plot(alphaValues, performance, 'o');

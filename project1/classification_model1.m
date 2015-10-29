@@ -7,6 +7,7 @@ load('PuntaCana_classification.mat');
 alpha = 0.5;
 K = 5;
 
+%X = dummyEncode2(X_train, [7 9 15 26 32]);
 X = X_train;
 y = y_train;
 
@@ -39,14 +40,17 @@ for k = 1:K
     tXTr = [ones(size(XTr, 1), 1) XTr];
     tXTe = [ones(size(XTe, 1), 1) XTe];
     
-    beta = logisticRegression(yTr, tXTr, alpha);
+    [beta, zol] = logisticRegression(yTr, tXTr, alpha);
     
     % training and test MSE(INSERT CODE)
     mleTrSub(k) = LogisticRegressionCost(yTr, tXTr, beta);
 
     % testing MSE using least squares
     mleTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
+    
+    
+    
 end
 
-mleTr = mean(mleTrSub);
-mleTe = mean(mleTeSub);
+mean(mleTrSub)
+mean(mleTeSub)
