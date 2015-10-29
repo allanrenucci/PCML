@@ -10,6 +10,8 @@ K = 5;
 X = X_train;
 y = y_train;
 
+%X = dummyEncode(X, [11 34 39 40 42 48 49 50 67 72]);
+
 X = normalize(X);
 
 % split data in K fold (we will only create indices)

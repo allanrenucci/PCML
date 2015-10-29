@@ -19,7 +19,7 @@ while max_perf >= last_perf
 
     for remove = 1:size(X_train, 2)
 
-        X = dummyEncode2(X_train, [7 9 15 26 32]);
+        X = dummyEncode(X_train, [7 9 15 26 32]);
         X = removeCols(X, remove);
         y = y_train;
 

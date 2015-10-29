@@ -3,7 +3,7 @@
 clear all
 load('PuntaCana_classification.mat');
 
-X_train = dummyEncode2(licols(X_train, 1e-3), [13]);
+X_train = dummyEncode(licols(X_train, 1e-3), [13]);
 
 last_perf = -1.0;
 max_perf = 0.0;

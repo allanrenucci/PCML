@@ -59,7 +59,7 @@ while 1
         mseTr(f) = mean(mseTrSub);
         mseTe(f) = mean(mseTeSub);
 
-        end
+    end
 
     % minimum error over removed features 
     [bestTe, index] = min(mseTe);

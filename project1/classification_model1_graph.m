@@ -9,7 +9,7 @@ K = 5;
 
 [indep, colonnes] = licols(X_train, 1e-3);
 
-X = indep; %dummyEncode2(X_train, [7 9 15 26 32]);
+X = indep; %dummyEncode(X_train, [7 9 15 26 32]);
 y = y_train;
 
 X = normalize(X);

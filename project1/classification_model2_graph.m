@@ -7,8 +7,8 @@ load('PuntaCana_classification.mat');
 alpha = 0.1;
 lambdaValues = logspace(-2,2,100);
 K = 5;
-X_dummy = dummyEncode2(X_train, [7 9 15 26 32]);
-X = dummyEncode2(X_train, [7 9 15 26 32]);
+X_dummy = dummyEncode(X_train, [7 9 15 26 32]);
+X = dummyEncode(X_train, [7 9 15 26 32]);
 y = y_train;
 
 X = normalize(X);

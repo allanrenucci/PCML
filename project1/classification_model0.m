@@ -6,7 +6,7 @@ load('PuntaCana_classification.mat');
 % Constants
 K = 5;
 
-X = dummyEncode2(X_train, [7 9 15 26 32]);
+X = dummyEncode(X_train, [7 9 15 26 32]);
 y = y_train;
 
 X = normalize(X);

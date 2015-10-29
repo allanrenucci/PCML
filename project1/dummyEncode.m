@@ -1,38 +1,17 @@
-function [ encoded ] = dummyEncode(X, cols)
+function X = dummyEncode(X, cols)
 
-if isempty(cols)
-    encoded = X;
-else
-    toEncode = X(:, cols(1));
-    maximum = max(toEncode);
-    minimum = min(toEncode);
-    categories = maximum - minimum + 1;
+counter = 0;
+for i = 1:size(cols, 2)
+    c = cols(i) + counter;
+
+    encodeMe = X(:, c);
+    encoded = dummyvar(encodeMe);
     
-    newColumns = zeros(size(toEncode, 1), categories);
-    
-    for value = minimum:maximum
-        for j = 1:size(toEncode, 1)
-            if toEncode(j) == value
-                newColumns(value, j) = 1;
-            end
-        end
-    end
-    
-    if (cols(1) > 1)
-        before = X(:, 1:(cols(1) - 1));
-    else
-        before = [];
-    end
-    
-    if cols(1) < size(X, 2)
-        after = X(:, (cols(1) + 1):end);
-    else
-        after = [];
-    end
-    
-    remainingCols = cols(2:end) + (categories - 1); 
-    
-    encoded = dummyEncode([before newColumns after], remainingCols);
+    before = X(:, 1:(c - 1));
+    after = X(:, (c + 1):end);
+
+    X = [before encoded after];
+    counter = counter + size(encoded, 2) - 1;
 end
 
 end
