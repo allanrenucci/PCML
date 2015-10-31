@@ -4,14 +4,24 @@ clear all
 load('PuntaCana_regression.mat');
 
 % Constants
-lambdas = logspace(-4,3,50);
-degrees = [1 4 5 6];
-K = 3;
+lambdas = logspace(-2,4,50);
+degrees = [2 3 4];
+K = 10;
 
 X = X_train;
 y = y_train;
 
-X = normalize(X);
+% Cleaning data
+binVars = [39 48 49];
+catVars = [11 34 40 42 50 67 72];
+X = cleanData(X, binVars, catVars);
+
+% Feature used to choose between the two models
+D = 95;
+
+m1Vars = X(:, D) < 0.5;
+X = X(m1Vars, :);
+y = y(m1Vars);
 
 % split data in K fold (we will only create indices)
 setSeed(1);
@@ -47,25 +57,27 @@ for i = 1:length(degrees)
             beta = ridgeRegression(yTr, tXTr, lambda);
 
             % RMSE on training set
-            mseTrSub(k) = computeRMSE(yTr,tXTr,beta);
+            rmseTrSub(k) = computeRMSE(yTr,tXTr,beta);
 
             % RMSE on test set
-            mseTeSub(k) = computeRMSE(yTe,tXTe,beta);
+            rmseTeSub(k) = computeRMSE(yTe,tXTe,beta);
         end
 
         % Mean RMSE over K fold
-        mseTr(j) = mean(mseTrSub);
-        mseTe(j) = mean(mseTeSub);
+        rmseTr(j) = mean(rmseTrSub);
+        rmseTe(j) = mean(rmseTeSub);
     end
     
-    mseTrDe(:, i) = mseTr;
-    mseTeDe(:, i) = mseTe;
+    rmseTrDe(:, i) = rmseTr;
+    rmseTeDe(:, i) = rmseTe;
+    [minRMSETe, i] = min(rmseTe);
+    fprintf('degree %d: minRMSETe=%f, lambda=%f\n', degree, minRMSETe, lambdas(i));
     
 end
 
 figure
 subplot(2,1,1);
-semilogx(lambdas, mseTrDe);
+semilogx(lambdas, rmseTrDe);
 subplot(2,1,2);
-semilogx(lambdas, mseTeDe);
+semilogx(lambdas, rmseTeDe);
 
