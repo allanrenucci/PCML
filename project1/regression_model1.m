@@ -10,7 +10,7 @@ K = 5;
 X = X_train;
 y = y_train;
 
-%X = dummyEncode(X, [11 34 39 40 42 48 49 50 67 72]);
+X = dummyEncode(X, [11 34 40 42 50 67 72]);
 
 X = normalize(X);
 
@@ -34,10 +34,13 @@ for k = 1:K
     XTr = X(idxTr,:);
     
     % form tX
-    tXTr = [ones(length(yTr), 1) XTr];
-    tXTe = [ones(length(yTe), 1) XTe];
+    %tXTr = [ones(length(yTr), 1) XTr];
+    %tXTe = [ones(length(yTe), 1) XTe];
+    tXTr = phi(XTr, 6);
+    tXTe = phi(XTe, 6);
     
-    beta = leastSquaresGD(yTr, tXTr, alpha);
+    %beta = leastSquaresGD(yTr, tXTr, alpha);
+    beta = ridgeRegression(yTr, tXTr, 1);
     
     % RMSE on training set
     mseTrSub(k) = computeRMSE(yTr,tXTr,beta);

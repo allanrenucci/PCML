@@ -4,9 +4,9 @@ clear all
 load('PuntaCana_regression.mat');
 
 % Constants
-lambdas = logspace(-4,3,100);
+lambdas = logspace(-4,3,50);
 degrees = [1 4 5 6];
-K = 5;
+K = 3;
 
 X = X_train;
 y = y_train;

@@ -6,8 +6,10 @@ load('PuntaCana_regression.mat');
 % Constants
 alpha = 0.1;
 lambda = 1;
-K = 5;
-degree = 6;
+K = 4;
+%degree = 5;
+%degrees = [1 4 5 6];
+degrees = [6];
 
 % split data in K fold (we will only create indices)
 setSeed(1);
@@ -18,14 +20,20 @@ for k = 1:K
     idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
 end
 
+for degree = degrees
+    
+fprintf('Degree %d:\n', degree);
+X_reduced = X_train;
+X_reduced = dummyEncode(X_reduced, [11 34 40 42 50 67 72]);
+
 best = Inf;
 
 while 1
     
     % filter out feature one by one
-    for f = 1:size(X_train, 2)
+    for f = 1:size(X_reduced, 2)
 
-        X = removeCols(X_train, f);
+        X = removeCols(X_reduced, f);
         y = y_train;
 
         X = normalize(X);
@@ -67,10 +75,14 @@ while 1
 
     if bestTe < best
         best = bestTe;
-        X_train = removeCols(X_train, index);
+        X_reduced = removeCols(X_reduced, index);
         fprintf('Remove %d: mseTr=%f, mseTe=%f\n', index, bestTr, bestTe);
     else
         break;
     end
+
+end
+
+fprintf('\n');
 
 end
