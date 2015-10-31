@@ -4,14 +4,19 @@ clear all
 load('PuntaCana_classification.mat');
 
 % Constants
-alpha = 0.1;
-lambdaValues = logspace(-2,2,100);
+alpha = 0.001;
+lambdaValues = 0.0356; %logspace(-2,2,30);
+
+degree = 3;
 K = 5;
-X_dummy = dummyEncode(X_train, [7 9 15 26 32]);
-X = dummyEncode(X_train, [7 9 15 26 32]);
+
+X(:, [7 9 32]) = []
+[X_binary, X_train] = [X_train(:, [7 9 32]), X_train(:, 1:32 - [7 9 32]);
+[X_dummy, X] = dummyEncode(X_train, [7 9 15 26 32]);
+X = X_train; %licols(dummyEncode2(X_train, [7 9 15 26 32]), 1e-3);
 y = y_train;
 
-X = normalize(X);
+X = [X_dummy normalize(X)];
 
 % split data in K fold (we will only create indices)
 setSeed(1);
@@ -19,11 +24,8 @@ N = size(y,1);
 idx = randperm(N);
 Nk = floor(N/K);
 for k = 1:K
-	idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
+    idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
 end
-
-mleTr = zeros(1, length(lambdaValues));
-mleTe = zeros(1, length(lambdaValues));
 
 for j = 1:length(lambdaValues)
     lambda = lambdaValues(j);
@@ -46,47 +48,40 @@ for j = 1:length(lambdaValues)
         yTe(yTe == -1) = 0;
 
         % form tX
-        tXTr = [ones(size(XTr, 1), 1) XTr];
-        tXTe = [ones(size(XTe, 1), 1) XTe];
+        tXTr = phi(XTr, degree); %[ones(size(XTr, 1), 1) XTr];
+        tXTe = phi(XTe, degree); %[ones(size(XTe, 1), 1) XTe];
 
         beta = penLogisticRegression(yTr, tXTr, alpha, lambda);
 
         % training and test MSE(INSERT CODE)
-        mleTrSub(k) = PenLogisticRegressionCost(yTr, tXTr, beta, lambda);
+        [mleTrSub(k), zolTrSub(k), rmseTrSub(k)] = PenLogisticRegressionCost(yTr, tXTr, beta, lambda);
 
         % testing MSE using least squares
-        mleTeSub(k) = PenLogisticRegressionCost(yTe, tXTe, beta, lambda);
-        
-        %%%
-        %%%
-        %%%
-        correct = 0;
-        for n = 1:length(yTe)
-            tmp = tXTe(n, :) * beta;
-            if tmp < 0.5
-                tmp = 0;
-            else
-                tmp = 1;
-            end
-            %fprintf('Predicted = %d, actual = %d\n', tmp, yTe(n));
-            if tmp == yTe(n)
-                correct = correct + 1;
-            end
-        end
-        %%%
-        %%%
-        %%%
-        
-        perf(k) = correct / length(yTe);
+        [mleTeSub(k), zolTeSub(k), rmseTeSub(k)] = PenLogisticRegressionCost(yTe, tXTe, beta, lambda);
+
     end
 
-    mleTr(j) = mean(mleTrSub);
-    mleTe(j) = mean(mleTeSub);
-    
-    m = mean(perf)
-    performance(j) = m;
+    mleTrX(j) = mean(mleTrSub);
+    zolTrX(j) = mean(zolTrSub);
+    rmseTrX(j) = mean(rmseTrSub);
+    mleTeX(j) = mean(mleTeSub);
+    zolTeX(j) = mean(zolTeSub);
+    rmseTeX(j) = mean(rmseTeSub);
+
 end
+
+mleTr = max(mleTrX);
+zolTr = max(zolTrX);
+rmseTr = max(rmseTrX);
+
+mleTe = max(mleTeX);
+zolTe = max(zolTeX);
+rmseTe = max(rmseTeX);
+
+fprintf('Training: mle = %f, zol = %f, rmse = %f\n', mleTr, zolTr, rmseTr);
+fprintf('Testing : mle = %f, zol = %f, rmse = %f\n', mleTe, zolTe, rmseTe);
+fprintf('Perform : %f%%\n', 1 - zolTe);
 
 %[mesh1, mesh2] = meshgrid(alphaValues, lambdaValues);
 %plot(mesh1, mesh2, mleTr, mesh1, mesh2, mleTe);
-plot(lambdaValues, performance)
+%plot(lambdaValues, performance)

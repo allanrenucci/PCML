@@ -3,7 +3,8 @@
 clear all
 load('PuntaCana_classification.mat');
 
-X_train = dummyEncode(licols(X_train, 1e-3), [13]);
+X_train = dummyEncode(X_train, [7]);
+% [X_train, y_train] = removeOutliers(X_train, y_train);
 
 last_perf = -1.0;
 max_perf = 0.0;
@@ -15,7 +16,7 @@ while max_perf >= last_perf
     last_perf = max_perf;
 
     % Constants
-    alpha = 1.0;
+    alpha = 0.0001;
     K = 5;
 
     for remove = 1:size(X_train, 2)
@@ -55,42 +56,26 @@ while max_perf >= last_perf
             beta = logisticRegression(yTr, tXTr, alpha);
 
             % training and test MSE(INSERT CODE)
-            mleTrSub(k) = LogisticRegressionCost(yTr, tXTr, beta);
+            [mleTrSub(k), zolTrSub(k), rmseTrSub(k)] = LogisticRegressionCost(yTr, tXTr, beta);
 
             % testing MSE using least squares
-            mleTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
+            [mleTeSub(k), zolTeSub(k), rmseTeSub(k)] = LogisticRegressionCost(yTe, tXTe, beta);
 
-            %%%
-            %%%
-            %%%
-            correct = 0;
-            for n = 1:length(yTe)
-                tmp = tXTe(n, :) * beta;
-                if tmp < 0.5
-                    tmp = 0;
-                else
-                    tmp = 1;
-                end
-                %fprintf('Predicted = %d, actual = %d\n', tmp, yTe(n));
-                if tmp == yTe(n)
-                    correct = correct + 1;
-                end
-            end
-            %%%
-            %%%
-            %%%
-
-            perf(k) = correct / length(yTe);
+            
         end
 
         mleTr = mean(mleTrSub);
+        zolTr = mean(zolTrSub);
+        rmseTr = mean(rmseTrSub);
         mleTe = mean(mleTeSub);
-        perfTe = mean(perf);
-        tmpPerf(remove) = perfTe;
+        zolTe = mean(zolTeSub);
+        rmseTe = mean(rmseTeSub);
+        
         tmpMleTe(remove) = mleTe;
     end
 
-    [max_perf, removeMe] = max(tmpPerf);
+    [max_perf, removeMe] = min(zolTe);
+    max_perf = 1 - max_perf;
     [min_mleTe, removeMe2] = min(abs(tmpMleTe));
     
     if max_perf >= last_perf

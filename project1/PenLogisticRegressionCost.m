@@ -1,23 +1,29 @@
-function cost = PenLogisticRegressionCost(y, tX, beta, lambda)
+function [cost, zerooneloss, rmse] = PenLogisticRegressionCost(y, tX, beta, lambda)
 
 cost = 0;
-correct = 0;
+rmse = 0;
+wrong = 0;
 
 for n = 1:length(y)
-    tmp = tX(n, :) * beta;
-    if tmp < 0.5
-        tmp = 0;
+    pHat = tX(n, :) * beta;
+    if pHat < 0.5
+        yHat = 0;
     else
-        tmp = 1;
+        yHat = 1;
     end
-    %fprintf('Predicted = %d, actual = %d\n', tmp, y(n));
-    if tmp == y(n)
-        correct = correct + 1;
+    
+    if yHat ~= y(n)
+        wrong = wrong + 1;
     end
-    cost = cost + (y(n) * tmp - log(1 + exp(tmp))) + lambda * (beta' * beta);
+    
+    rmse = rmse + (y(n) - pHat)^2;
+    cost = cost + y(n) * log(pHat) + (1 - y(n)) * log(1 - pHat) + lambda * (beta' * beta);
+
 end
 
-%fprintf('%d / %d -> %f%%\n', correct, length(y), correct / length(y) * 100);
+rmse = sqrt(rmse / length(y));
+cost = cost / -length(y);
+zerooneloss = wrong / length(y);
 
 end
 

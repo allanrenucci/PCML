@@ -5,16 +5,28 @@ beta = zeros(size(tX, 2), 1);
 maxIter = 10000;
 
 for i = 1:maxIter
-    sigma = 1./(1+exp(-(tX * beta)));
-    g = (tX' * (sigma - y)) / N;
+    
+    tmp = tX * beta;
+    
+    sigma = zeros(size(tmp,1),1);
+    sigma(tmp > 0) = 1./(1+exp(-(tmp(tmp > 0))));
+    sigma(tmp <= 0) = exp(tmp(tmp <= 0)) ./ (1 + exp((tmp(tmp <= 0))));
+    
+    g = (tX' * (sigma - y)) + 2;
    
     beta = beta - alpha * g;
     
     if g' * g < 1e-5
+        disp('conv');
         break;
     end
-  
+    
+    if i == maxIter
+        disp('div');
+    end
+
 end
+
 
 end
 

@@ -5,16 +5,20 @@ clear all
 load('PuntaCana_classification.mat');
 
 % Constants
-K = 5;
+K = 4;
 
-[indep, colonnes] = licols(X_train, 1e-3);
+indep = X_train;
+%[indep, ~] = licols(X_train, 1e-3);
+%[ indep, ~ ] = licols(dummyEncode2(X_train, [7 9 15 26 32]), 1e-3);
+%[indep, y_train] = removeOutliers(indep, y_train);
+%indep = dummyEncode2(X_train, [7 9 15 26 32]);
 
 X = indep; %dummyEncode(X_train, [7 9 15 26 32]);
 y = y_train;
 
 X = normalize(X);
 
-alphaValues = 0.1:0.05:3.0;
+alphaValues = 0.001;
 
 for n = 1:length(alphaValues)
     
@@ -50,38 +54,21 @@ for n = 1:length(alphaValues)
         beta = logisticRegression(yTr, tXTr, alpha);
 
         % training and test MSE(INSERT CODE)
-        mleTrSub(k) = LogisticRegressionCost(yTr, tXTr, beta);
+        [mleTrSub(k), zolTrSub(k), rmseTrSub(k)] = LogisticRegressionCost(yTr, tXTr, beta);
 
         % testing MSE using least squares
-        mleTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
-        
-        %%%
-        %%%
-        %%%
-        correct = 0;
-        for z = 1:length(yTe)
-            tmp = tXTe(z, :) * beta;
-            if tmp < 0.5
-                tmp = 0;
-            else
-                tmp = 1;
-            end
-            %fprintf('Predicted = %d, actual = %d\n', tmp, yTe(n));
-            if tmp == yTe(z)
-                correct = correct + 1;
-            end
-        end
-        %%%
-        %%%
-        %%%
-        
-        perf(k) = correct / length(yTe);
+        [mleTeSub(k), zolTeSub(k), rmseTeSub(k)] = LogisticRegressionCost(yTe, tXTe, beta);
     end
 
     mleTr(n) = mean(mleTrSub);
+    zolTr(n) = mean(zolTrSub);
+    rmseTr(n) = mean(rmseTrSub);
     mleTe(n) = mean(mleTeSub);
-    performance(n) = mean(perf);
+    zolTe(n) = mean(zolTeSub);
+    rmseTe(n) = mean(rmseTeSub);
     
 end
 
-plot(alphaValues, performance, 'o');
+fprintf('Training: mle = %f, zol = %f, rmse = %f\n', mleTr, zolTr, rmseTr);
+fprintf('Testing : mle = %f, zol = %f, rmse = %f\n', mleTe, zolTe, rmseTe);
+fprintf('Perform : %f%%\n', 1 - zolTe);

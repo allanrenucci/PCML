@@ -4,13 +4,14 @@ clear all
 load('PuntaCana_classification.mat');
 
 % Constants
-alpha = 0.5;
+alpha = 0.001;
 K = 5;
 
 %X = dummyEncode(X_train, [7 9 15 26 32]);
 X = X_train;
 y = y_train;
 
+[X, y] = removeOutliers(X, y);
 X = normalize(X);
 
 % split data in K fold (we will only create indices)
@@ -40,17 +41,19 @@ for k = 1:K
     tXTr = [ones(size(XTr, 1), 1) XTr];
     tXTe = [ones(size(XTe, 1), 1) XTe];
     
-    [beta, zol] = logisticRegression(yTr, tXTr, alpha);
+    beta = logisticRegression(yTr, tXTr, alpha);
     
     % training and test MSE(INSERT CODE)
-    mleTrSub(k) = LogisticRegressionCost(yTr, tXTr, beta);
+    [mleTrSub(k), zolTr(k)] = LogisticRegressionCost(yTr, tXTr, beta);
 
     % testing MSE using least squares
-    mleTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
+    [mleTeSub(k), zolTe(k)] = LogisticRegressionCost(yTe, tXTe, beta);
     
     
     
 end
 
-mean(mleTrSub)
-mean(mleTeSub)
+mleTr = mean(mleTrSub)
+zolTr = mean(zolTr)
+mleTe = mean(mleTeSub)
+zolTe = mean(zolTe)
