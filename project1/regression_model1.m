@@ -12,14 +12,17 @@ m1Lambda = 109.854114;
 m2Degree = 3;
 m2Lambda = 2.811769;
 
+X = X_train;
+y = y_train;
+
 % Dummy encode categorical variables
 binVars = [39 48 49];
 catVars = [11 34 40 42 50 67 72];
-X = cleanData(X_train, binVars, catVars);
-y = y_train;
+X(:, catVars) = X(:, catVars) + 1;
+X = cleanData(X, binVars, catVars);
 
-% Remove some features (2.7% reduction on RMSE)
-X = removeCols(X, [1 5 6 7 9 10 11 13 14 15 17 18 19 21 22 23 25 26 27 28 30 31 32 34 38 43 46 48 49 51 54 55 58 60 63 64 66 68 69 70 72 73 74 75 76 77 80 83 84 87 88 89 90 92 93]);
+% Remove some features (2.7% reduction on RMSE: 663 -> 645)
+X = removeCols(X, [1 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 31 36 39 41 42 44 47 48 51 53 56 57 59 61 62 63 65 66 67 68 69 70 73 76 77 80 81 82 83 85 86]);
 
 % Feature used to choose between the two models (last one in X)
 D = size(X, 2);

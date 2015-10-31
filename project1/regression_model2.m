@@ -14,10 +14,11 @@ y = y_train;
 % Cleaning data
 binVars = [39 48 49];
 catVars = [11 34 40 42 50 67 72];
+X(:, catVars) = X(:, catVars) + 1;
 X = cleanData(X, binVars, catVars);
 
-% Feature used to choose between the two models
-D = 95;
+% Feature used to choose between the two models (last one)
+D = size(X, 2);
 
 m1Vars = X(:, D) < 0.5;
 X = X(m1Vars, :);

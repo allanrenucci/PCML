@@ -5,7 +5,6 @@ load('PuntaCana_regression.mat');
 
 % Constants
 K = 10;
-D = 95; % Feature used to choose model
 % Model 1: feature 95 >= 0.5
 m1Degree = 1;
 m1Lambda = 109.854114;
@@ -13,11 +12,17 @@ m1Lambda = 109.854114;
 m2Degree = 3;
 m2Lambda = 2.811769;
 
+X_reduced = X_train;
+y = y_train;
+
 % Dummy encode categorical variables
 binVars = [39 48 49];
 catVars = [11 34 40 42 50 67 72];
-X_reduced = cleanData(X_train, binVars, catVars);
-y = y_train;
+X_reduced(:, catVars) = X_reduced(:, catVars) + 1;
+X_reduced = cleanData(X_reduced, binVars, catVars);
+
+% Feature used to choose between the two models (last one in X)
+D = size(X_reduced, 2);
 
 % split data in K fold (we will only create indices)
 setSeed(1);
