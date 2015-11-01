@@ -7,10 +7,10 @@ load('PuntaCana_regression.mat');
 K = 10;
 % Model 1: feature 95 >= 0.5
 m1Degree = 1;
-m1Lambda = 109.854114;
+m1Lambda = 106.673394;
 % Model 2: feature 95 < 0.5
 m2Degree = 3;
-m2Lambda = 2.811769;
+m2Lambda = 2.998844;
 
 X = X_train;
 y = y_train;
@@ -22,7 +22,7 @@ X(:, catVars) = X(:, catVars) + 1;
 X = cleanData(X, binVars, catVars);
 
 % Remove some features (2.7% reduction on RMSE: 663 -> 645)
-X = removeCols(X, [1 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 31 36 39 41 42 44 47 48 51 53 56 57 59 61 62 63 65 66 67 68 69 70 73 76 77 80 81 82 83 85 86]);
+%X = removeCols(X, [1 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 31 36 39 41 42 44 47 48 51 53 56 57 59 61 62 63 65 66 67 68 69 70 73 76 77 80 81 82 83 85 86]);
 
 % Feature used to choose between the two models (last one in X)
 D = size(X, 2);

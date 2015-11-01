@@ -5,7 +5,7 @@ load('PuntaCana_regression.mat');
 
 % Constants
 lambdas = logspace(-2,4,50);
-degrees = [2 3 4];
+degrees = [4 5 6];
 K = 10;
 
 X = X_train;
@@ -20,9 +20,9 @@ X = cleanData(X, binVars, catVars);
 % Feature used to choose between the two models (last one)
 D = size(X, 2);
 
-m1Vars = X(:, D) < 0.5;
-X = X(m1Vars, :);
-y = y(m1Vars);
+m1Vars = X(:, D) >= 0.5;
+%X = X(m1Vars, :);
+%y = y(m1Vars);
 
 % split data in K fold (we will only create indices)
 setSeed(1);
