@@ -1,8 +1,7 @@
 function beta = logisticRegression( y, tX, alpha )
 
-N = length(y);
 beta = zeros(size(tX, 2), 1);
-maxIter = 1000;
+maxIter = 10000;
 
 for i = 1:maxIter
     
@@ -16,13 +15,8 @@ for i = 1:maxIter
    
     beta = beta - alpha * g;
     
-    if g' * g < 1e-4
-        disp('conv');
+    if g' * g < 1e-5
         break;
-    end
-    
-    if i == maxIter
-        disp('div');
     end
 
 end
