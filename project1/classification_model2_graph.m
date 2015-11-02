@@ -1,22 +1,18 @@
-% Penalized logistic regression
+% logistic regression
 
+close all
 clear all
 load('PuntaCana_classification.mat');
 
 % Constants
-alpha = 0.001;
-lambdaValues = 0.0356; %logspace(-2,2,30);
-
-degree = 3;
-K = 5;
-
-X(:, [7 9 32]) = []
-[X_binary, X_train] = [X_train(:, [7 9 32]), X_train(:, 1:32 - [7 9 32]);
-[X_dummy, X] = dummyEncode(X_train, [7 9 15 26 32]);
-X = X_train; %licols(dummyEncode2(X_train, [7 9 15 26 32]), 1e-3);
+K = 2;
+X = X_train;
 y = y_train;
+degrees = [1 2 3 4 5];
+alpha = 0.003;
+lambdaValues = logspace(-4, 2, 10);
 
-X = [X_dummy normalize(X)];
+X = cleanData(X, [7 9 32], [15 26]);
 
 % split data in K fold (we will only create indices)
 setSeed(1);
@@ -27,61 +23,51 @@ for k = 1:K
     idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
 end
 
-for j = 1:length(lambdaValues)
-    lambda = lambdaValues(j);
+for dX = 1:length(degrees)
+    fprintf('Degree = %d\n', degrees(dX));
+    d = degrees(dX);
+    for i = 1:length(lambdaValues)
 
-    mleTrSub = zeros(k, 1);
-    mleTeSub = zeros(k, 1);
+        for k = 1:K
+            % get k'th subgroup in test, others in train
+            idxTe = idxCV(k,:);
+            idxTr = idxCV([1:k-1 k+1:end],:);
+            idxTr = idxTr(:);
+            yTe = y(idxTe);
+            XTe = X(idxTe,:);
+            yTr = y(idxTr);
+            XTr = X(idxTr,:);
 
-    for k = 1:K
-        % get k'th subgroup in test, others in train
-        idxTe = idxCV(k,:);
-        idxTr = idxCV([1:k-1 k+1:end],:);
-        idxTr = idxTr(:);
-        yTe = y(idxTe);
-        XTe = X(idxTe,:);
-        yTr = y(idxTr);
-        XTr = X(idxTr,:);
+            % Set to 0 values that are -1
+            yTr(yTr == -1) = 0;
+            yTe(yTe == -1) = 0;
 
-        % Set to 0 values that are -1
-        yTr(yTr == -1) = 0;
-        yTe(yTe == -1) = 0;
+            % form tX
+            %tXTr = [ones(size(XTr, 1), 1) XTr];
+            %tXTe = [ones(size(XTe, 1), 1) XTe];
+            tXTr = phi(XTr, d);
+            tXTe = phi(XTe, d);
 
-        % form tX
-        tXTr = phi(XTr, degree); %[ones(size(XTr, 1), 1) XTr];
-        tXTe = phi(XTe, degree); %[ones(size(XTe, 1), 1) XTe];
+            beta = penLogisticRegression(yTr, tXTr, alpha, lambdaValues(i));
 
-        beta = penLogisticRegression(yTr, tXTr, alpha, lambda);
+            % training and test MSE(INSERT CODE)
+            zolTrSub(k) = PenLogisticRegressionCost(yTr, tXTr, beta, lambdaValues(i));
 
-        % training and test MSE(INSERT CODE)
-        [mleTrSub(k), zolTrSub(k), rmseTrSub(k)] = PenLogisticRegressionCost(yTr, tXTr, beta, lambda);
+            % testing MSE using least squares
+            zolTeSub(k) = PenLogisticRegressionCost(yTe, tXTe, beta, lambdaValues(i));
+        end
 
-        % testing MSE using least squares
-        [mleTeSub(k), zolTeSub(k), rmseTeSub(k)] = PenLogisticRegressionCost(yTe, tXTe, beta, lambda);
+        zolTr(d, i) = mean(zolTrSub);
+        zolTe(d, i) = mean(zolTeSub);
+
+        fprintf('degree = %d, Lambda = %f\n', d, lambdaValues(i));
+        fprintf('\tTraining: mle = %f, zol = %f, rmse = %f\n', 0, zolTr(d, i), 0);
+        fprintf('\tTesting : mle = %f, zol = %f, rmse = %f\n', 0, zolTe(d, i), 0);
+        fprintf('\tPerform : %f%%\n', (1 - zolTe(d, i)) * 100);
 
     end
-
-    mleTrX(j) = mean(mleTrSub);
-    zolTrX(j) = mean(zolTrSub);
-    rmseTrX(j) = mean(rmseTrSub);
-    mleTeX(j) = mean(mleTeSub);
-    zolTeX(j) = mean(zolTeSub);
-    rmseTeX(j) = mean(rmseTeSub);
-
 end
 
-mleTr = max(mleTrX);
-zolTr = max(zolTrX);
-rmseTr = max(rmseTrX);
-
-mleTe = max(mleTeX);
-zolTe = max(zolTeX);
-rmseTe = max(rmseTeX);
-
-fprintf('Training: mle = %f, zol = %f, rmse = %f\n', mleTr, zolTr, rmseTr);
-fprintf('Testing : mle = %f, zol = %f, rmse = %f\n', mleTe, zolTe, rmseTe);
-fprintf('Perform : %f%%\n', 1 - zolTe);
-
-%[mesh1, mesh2] = meshgrid(alphaValues, lambdaValues);
-%plot(mesh1, mesh2, mleTr, mesh1, mesh2, mleTe);
-%plot(lambdaValues, performance)
+plot(zolTr);
+hold on;
+plot(zolTe);

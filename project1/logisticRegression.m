@@ -2,7 +2,7 @@ function beta = logisticRegression( y, tX, alpha )
 
 N = length(y);
 beta = zeros(size(tX, 2), 1);
-maxIter = 10000;
+maxIter = 1000;
 
 for i = 1:maxIter
     
@@ -12,11 +12,11 @@ for i = 1:maxIter
     sigma(tmp > 0) = 1./(1+exp(-(tmp(tmp > 0))));
     sigma(tmp <= 0) = exp(tmp(tmp <= 0)) ./ (1 + exp((tmp(tmp <= 0))));
     
-    g = (tX' * (sigma - y)) + 2;
+    g = (tX' * (sigma - y));
    
     beta = beta - alpha * g;
     
-    if g' * g < 1e-5
+    if g' * g < 1e-4
         disp('conv');
         break;
     end

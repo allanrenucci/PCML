@@ -1,39 +1,42 @@
 % logistic regression
 
+close all
 clear all
 load('PuntaCana_classification.mat');
 
-X_train = dummyEncode(X_train, [7]);
-% [X_train, y_train] = removeOutliers(X_train, y_train);
+% Constants
+K = 4;
+X = X_train;
+y = y_train;
+degree = 1;
 
-last_perf = -1.0;
-max_perf = 0.0;
-iter = 0;
+X_input = cleanData(X_train, [7 9 32], [15 26]);
 
-while max_perf >= last_perf
+alpha = 0.002;
+
+% split data in K fold (we will only create indices)
+setSeed(1);
+N = size(y,1);
+idx = randperm(N);
+Nk = floor(N/K);
+for k = 1:K
+    idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
+end
+
+lowest_zol = Inf;
+removed = [];
+
+while 1
     
-    iter = iter + 1;
-    last_perf = max_perf;
-
-    % Constants
-    alpha = 0.0001;
-    K = 5;
-
-    for remove = 1:size(X_train, 2)
-
-        X = removeCols(X_train, remove);
-        y = y_train;
-
-        X = normalize(X);
-
-        % split data in K fold (we will only create indices)
-        setSeed(1);
-        N = size(y,1);
-        idx = randperm(N);
-        Nk = floor(N/K);
-        for k = 1:K
-            idxCV(k,:) = idx(1+(k-1)*Nk:k*Nk);
+    zolTe = ones(size(X, 2), 1);
+    
+    for col = 1:size(X_input, 2)
+        fprintf('Testing col %d\n', col);
+        if ismember(col, removed)
+            continue
         end
+        
+        X = removeCols(X_input, removed); 
 
         for k = 1:K
             % get k'th subgroup in test, others in train
@@ -50,43 +53,32 @@ while max_perf >= last_perf
             yTe(yTe == -1) = 0;
 
             % form tX
-            tXTr = [ones(size(XTr, 1), 1) XTr];
-            tXTe = [ones(size(XTe, 1), 1) XTe];
+            %tXTr = [ones(size(XTr, 1), 1) XTr];
+            %tXTe = [ones(size(XTe, 1), 1) XTe];
+            tXTr = phi(XTr, degree);
+            tXTe = phi(XTe, degree);
 
             beta = logisticRegression(yTr, tXTr, alpha);
 
             % training and test MSE(INSERT CODE)
-            [mleTrSub(k), zolTrSub(k), rmseTrSub(k)] = LogisticRegressionCost(yTr, tXTr, beta);
+            zolTrSub(k) = LogisticRegressionCost(yTr, tXTr, beta);
 
             % testing MSE using least squares
-            [mleTeSub(k), zolTeSub(k), rmseTeSub(k)] = LogisticRegressionCost(yTe, tXTe, beta);
-
-            
+            zolTeSub(k) = LogisticRegressionCost(yTe, tXTe, beta);
         end
 
-        mleTr = mean(mleTrSub);
-        zolTr = mean(zolTrSub);
-        rmseTr = mean(rmseTrSub);
-        mleTe = mean(mleTeSub);
-        zolTe = mean(zolTeSub);
-        rmseTe = mean(rmseTeSub);
-        
-        tmpMleTe(remove) = mleTe;
-    end
+        zolTe(col) = mean(zolTeSub);
 
-    [max_perf, removeMe] = min(zolTe);
-    max_perf = 1 - max_perf;
-    [min_mleTe, removeMe2] = min(abs(tmpMleTe));
+    end
     
-    if max_perf >= last_perf
-        fprintf('Remove feature %d to get %f.\n', removeMe, max_perf);
-        X_train = removeCols(X_train, removeMe);
-        overall_perf(iter) = max_perf;
-        overall_err_te(iter) = min_mleTe;
+    [min_zol, remove_me] = min(zolTe);
+    
+    if min_zol < lowest_zol
+        lowest_zol = min_zol;
+        fprintf('Remove feature %d to get %f%%\n', remove_me, (1 - zolTe) * 100);
+        removed = [removed remove_me];
+    else
+        break
     end
-
+        
 end
-
-plot(overall_perf);
-hold on;
-plot(overall_err_te);

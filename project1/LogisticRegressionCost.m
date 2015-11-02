@@ -1,36 +1,17 @@
-function [cost, zerooneloss, rmse] = LogisticRegressionCost(y, tX, beta)
+function [zerooneloss, logloss] = LogisticRegressionCost(y, tX, beta)
 
-cost = 0;
-rmse = 0;
-wrong = 0;
+tmp = tX * beta;
 
-for n = 1:length(y)
-    
-    tmp = tX * beta;
-    
-    sigma = zeros(size(tmp,1),1);
-    sigma(tmp > 0) = 1./(1+exp(-(tmp(tmp > 0))));
-    sigma(tmp <= 0) = exp(tmp(tmp <= 0)) ./ (1 + exp((tmp(tmp <= 0))));
-    
-    pHat = sigma(tX(n, :) * beta); % tX(n, :) * beta
-    if pHat < 0.5
-        yHat = 0;
-    else
-        yHat = 1;
-    end
-    
-    if yHat ~= y(n)
-        wrong = wrong + 1;
-    end
-    
-    rmse = rmse + (y(n) - pHat)^2;
-    cost = cost + y(n) * log(pHat) + (1 - y(n)) * log(1 - pHat);
-    
-end
+sigma = zeros(size(tmp,1),1);
+sigma(tmp > 0) = 1./(1+exp(-(tmp(tmp > 0))));
+sigma(tmp <= 0) = exp(tmp(tmp <= 0)) ./ (1 + exp((tmp(tmp <= 0))));
 
-rmse = sqrt(rmse / length(y));
-cost = cost / -length(y);
+yPred = (sigma > 0.5);
+wrong = sum(yPred ~= y);
 zerooneloss = wrong / length(y);
+[log(min(sigma)) log(max(sigma))]
+assert(min(sigma) > 0);
+logloss = -1/length(y) * sum(y' * log(sigma) + (-y + 1)' * log(-sigma + 1));
 
 end
 

@@ -6,7 +6,7 @@ load('PuntaCana_classification.mat');
 % Constants
 K = 5;
 
-X = dummyEncode(X_train, [7 9 15 26 32]);
+X = cleanData(X_train, [7 9 32], [15 26]);
 y = y_train;
 
 X = normalize(X);
@@ -39,9 +39,13 @@ for k = 1:K
         yR = 0;
     end
     
-    eTrSub(k) = sum(yTr * yR - log(1 + exp(yR)));
-    eTeSub(k) = sum(yTe * yR - log(1 + exp(yR)));
+    eTrSub(k) = sum(yTr(yTr ~= yR)) / length(yTr);
+    eTeSub(k) = sum(yTe(yTe ~= yR)) / length(yTe);
+    
 end
 
-mleTr = mean(eTrSub);
-mleTe = mean(eTeSub);
+zolTr = mean(eTrSub);
+zolTe = mean(eTeSub);
+
+fprintf('Training error: %f\n', zolTr);
+fprintf('Testing error : %f\n', zolTe);
