@@ -25,9 +25,9 @@ XTr = cleanData(XTr, binVars, catVars);
 XTe = cleanData(XTe, binVars, catVars);
 
 % Remove some features (2.7% reduction on RMSE: 663 -> 645)
-toRemove = [1 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 31 36 39 41 42 44 47 48 51 53 56 57 59 61 62 63 65 66 67 68 69 70 73 76 77 80 81 82 83 85 86];
-XTr = removeCols(XTr, toRemove);
-XTe = removeCols(XTe, toRemove);
+%toRemove = [1 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 31 36 39 41 42 44 47 48 51 53 56 57 59 61 62 63 65 66 67 68 69 70 73 76 77 80 81 82 83 85 86];
+%XTr = removeCols(XTr, toRemove);
+%XTe = removeCols(XTe, toRemove);
 
 N = size(XTr, 2);
 
@@ -61,3 +61,5 @@ betam2 = ridgeRegression(yTrM2, tXTrM2, m2Lambda);
 yTe = zeros(size(X_test, 2), 1);
 yTe(varsTeM1) = tXTeM1 * betam1;
 yTe(varsTeM2) = tXTeM2 * betam2;
+
+csvwrite('predictions_regression.csv', yTe);
