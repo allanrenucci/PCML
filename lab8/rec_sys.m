@@ -80,7 +80,16 @@ fprintf('RMSE for global mean: %.4f\n', full(rmse_gm));
 
 % Baseline 2 : user's mean
 % INSERT CODE
-fprintf('RMSE for user mean: %.4f\n', NaN);
+for n = 1:size(X, 2)
+    X_n = X(:, n);
+    user_mean(n) = mean(X_n(X_n ~= 0));
+end
+
+user_mean = repmat(user_mean, size(X, 1), 1);
+obs = Xtest ~= 0;
+rmse_um = sqrt(mean((Xtest(obs) - user_mean(obs)) .^ 2));
+
+fprintf('RMSE for user mean: %.4f\n', full(rmse_um));
 
 % Baseline 3 : movies's mean
 % INSERT CODE
