@@ -208,10 +208,15 @@ X_pred_norm = X_pred_norm * diag(1./std_X);
 % Form (y,tX) to get regression data in matrix form
 % tX_pred = [ones(N_test,1),X_pred_norm];
 tX_pred = X_pred_norm;
-kernel_pred = rbf_kernel(tX_pred, tX, gamma);
 
 % IMPLEMENT PREDICTION FOR EACH TEST POINT
-pred = ones(size(hx, 1) * size(hx, 2), 1);
+%pred = ones(size(hx, 1) * size(hx, 2), 1);
+SV_inds = find(alphas>0);
+X_SV = X_norm(SV_inds, :);
+y_SV = y(SV_inds, :);
+alphas_SV = alphas(SV_inds);
+kernel_pred = rbf_kernel(tX_pred, X_SV, gamma);
+pred = kernel_pred * (alphas_SV .* y_SV) + beta0;
 
 pred = reshape(pred, size(hx));
 
