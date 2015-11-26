@@ -108,6 +108,8 @@ K = linear_kernel(tX, tX);
 C = 0.1;
 [alphas, beta0] = SMO(K, y, C);
 
+stem(alphas);
+
 % Visualize SVM classification and margins
 % Create a 2D meshgrid of values of heights and weights
 h = min(X(:,1)):.01:max(X(:,1));
@@ -127,7 +129,13 @@ X_pred_norm = X_pred_norm * diag(1./std_X);
 tX_pred = X_pred_norm;
 
 % IMPLEMENT PREDICTION FOR EACH TEST POINT
-pred = ones(size(hx, 1) * size(hx, 2), 1);
+%pred = ones(size(hx, 1) * size(hx, 2), 1);
+SV_inds = find(alphas>0);
+X_SV = X_norm(SV_inds, :);
+y_SV = y(SV_inds, :);
+alphas_SV = alphas(SV_inds);
+kernel_pred = linear_kernel(tX_pred, X_SV);
+pred = kernel_pred * (alphas_SV .* y_SV) + beta0;
 
 pred = reshape(pred, size(hx));
 
