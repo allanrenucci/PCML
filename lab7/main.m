@@ -29,7 +29,9 @@ X_norm = X_norm*diag(1 ./ std_X);
 tX = [ones(N, 1) X_norm];
 
 % ENTER CODE FOR PENALIZED LOGISTIC REGRESSION
-betas = randn(1, 3);
+y_pen = y;
+y_pen(y == -1) = 0;
+betas = penLogisticRegression(y_pen, tX, 0.001, 0.1);
 
 % Create a 2D meshgrid of values of heights and weights
 h = min(X(:,1)):.01:max(X(:,1));
@@ -50,7 +52,7 @@ X_pred_norm = X_pred_norm * diag(1./std_X);
 tX_pred = [ones(N_test, 1) X_pred_norm];
 
 % IMPLEMENT PREDICTION FOR EACH TEST POINT
-pred = 0;
+pred = tX_pred * betas;
 
 pred = reshape(pred, size(hx));
 
