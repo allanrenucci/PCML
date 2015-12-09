@@ -1,4 +1,4 @@
-function err = trainNeuralNetwork(XTrain, yTrain, xTest, yTest)
+function err = neuralNetwork(XTrain, yTrain, xTest, yTest)
 
 fprintf('Training simple neural network..\n');
 
