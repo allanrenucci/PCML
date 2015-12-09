@@ -1,4 +1,4 @@
-function [ ber ] = trainNeuralNetwork(XTrain, yTrain, xTest, yTest)
+function err = trainNeuralNetwork(XTrain, yTrain, xTest, yTest)
 
 fprintf('Training simple neural network..\n');
 
@@ -59,6 +59,6 @@ predErr = sum(classVote ~= yTest) / length(yTest);
 ber = BER(4, yTest, classVote);
 
 fprintf('\nTesting error: %.2f%%, ber=%f\n\n', predErr * 100, ber);
-
+err = [predErr, ber];
 end
 

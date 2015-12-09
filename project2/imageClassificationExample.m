@@ -32,7 +32,6 @@ Te = [];
 
 % NOTE: you should do this randomly! and k-fold!
 K = 2;
-c = cvpartition(train.y, 'KFold', K);
 
 fun = @(xTrain, yTrain, xTest, yTest)(trainNeuralNetwork(xTrain, yTrain, xTest, yTest));
-errors = crossval(fun, train.X_hog, train.y, 'partition', c);
+errors = crossval(fun, train.X_hog, train.y, 'kfold', K);
