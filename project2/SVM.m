@@ -1,8 +1,10 @@
 clearvars;
 
 % Constants
-KernelFunction = 'linear'; % 'gaussian'
+%KernelFunction = 'gaussian'; % loss = 0.6
+KernelFunction = 'linear'; % loss = 0.33
 Coding = 'onevsall';
+K = 2;
 
 % Load features and labels of training data
 load train/train.mat;
@@ -20,12 +22,17 @@ t = templateSVM('Standardize' ,1 , ...
 %options = statset('UseParallel', 1);
 
 % Train an ECOC multiclass model
+fprintf('Training a muticlass model\n');
 Mdl = fitcecoc(X, Y, ...
     'Coding', Coding, ...
     'Learners', t, ...
-    'FitPosterior',1, ...
     'ClassNames',[1, 2, 3, 4], ...
     'Verbose', 2);
 
-% Cross validate the ECOC classifier using 10-fold cross validation.
-CVMdl = crossval(Mdl);
+% Cross validate the ECOC classifier using K-fold cross validation.
+fprintf('Cross validating with %d-Fold\n', K);
+CVMdl = crossval(Mdl, 'kfold', K);
+
+% Loss
+loss = kfoldLoss(CVMdl, 'lossfun', 'classiferror');
+fprintf('Loss %f\n', loss);
