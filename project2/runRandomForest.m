@@ -5,6 +5,6 @@ load train/train.mat;
 K = 2;
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
-    (randomForest(xTrain, yTrain, xTest, yTest, 100, 74));
+    (randomForest(xTrain, yTrain, xTest, yTest, 200, 74));
 
-errors = crossval(fun, train.X_hog, train.y, 'kfold', K);
+errors = crossval(fun, train.X_cnn, train.y, 'kfold', K);
