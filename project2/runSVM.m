@@ -1,6 +1,6 @@
 clearvars;
 
-load train/train.mat;
+load('train/train.mat');
 
 K = 2;
 
@@ -11,6 +11,6 @@ sigma = 1;
 X = normalize(X, mu, sigma);
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
-    (neuralNetwork(xTrain, yTrain, xTest, yTest, coeff));
+    (SVM(xTrain, yTrain, xTest, yTest, coeff));
 
 errors = crossval(fun, X, train.y, 'kfold', K);

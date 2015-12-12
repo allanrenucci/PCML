@@ -1,11 +1,9 @@
-load train/train.mat;
+function [] = cache(filename, X, retained)
 
-X = train.X_hog;
-X = X - repmat(mean(X), size(X, 1), 1);
+%sigma = std(X); Fuck up the result ?
+sigma = 1;
+[coeff, ~, mu] = reduceDimension(normalize(X, 0, sigma), retained);
 
-fprintf('Dimensionality reduction... \n');
-T = reduceDimension(X);
-X = X * T;
-fprintf('Reduced from %d to %d features\n', size(train.X_hog, 2), size(X, 2));
+save(filename, 'coeff', 'mu', 'sigma');
 
-csvwrite('reduced_xhog.csv', X);
+end

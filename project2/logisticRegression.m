@@ -1,16 +1,20 @@
-function err = logisticRegression(XTrain, yTrain, xTest, yTest)
+function err = logisticRegression(XTrain, yTrain, XTest, yTest, coeff)
 
-[normXTrain, mu, sigma] = zscore(XTrain); % train, get mu and std
-Tl = reduceDimension(normXTrain);
-normXTrain = normXTrain * Tl;
+% Apply dimensionality reduction 
+XTrain = XTrain * coeff;
+XTest = XTest * coeff;
 
-normXTest = normalize(xTest, mu, sigma);  % normalize test data
-normXTest = normXTest * Tl;
+fprintf('Training logistic regression \n');
+B = mnrfit(XTrain, double(yTrain));
 
-B = mnrfit(normXTrain, double(yTrain));
-yPred = mnrval(B, normXTest);
+fprintf('Computing predictions \n');
+yPred = mnrval(B, XTest);
 [~, classVote] = max(yPred, [], 2);
-err = sum(classVote ~= yTest) / length(yTest);
+
+predErr = sum(classVote ~= yTest) / length(yTest);
+ber = BER(4, yTest, yPred);
+
+err = [predErr, ber];
 
 end
 

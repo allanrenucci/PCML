@@ -1,38 +1,31 @@
-clearvars;
+function err = SVM(XTrain, yTrain, XTest, yTest, coeff)
 
 % Constants
-%KernelFunction = 'gaussian'; % loss = 0.6
-KernelFunction = 'linear'; % loss = 0.33
+KernelFunction = 'gaussian'; % loss = 0.6
+%KernelFunction = 'linear'; % loss = 0.33
+Verbose = 2;
 Coding = 'onevsall';
-K = 2;
 
-% Load features and labels of training data
-load train/train.mat;
-
-Y = train.y;
-%X = csvread('reduced_xhog.csv');
-X = train.X_hog;
-
-rng(1); % For reproducibility
+% Apply dimensionality reduction 
+XTrain = XTrain * coeff;
+XTest = XTest * coeff;
 
 t = templateSVM('Standardize' ,1 , ...
-    'KernelFunction', KernelFunction);
+    'KernelFunction', KernelFunction, ...
+    'KernelScale', 'auto');
 
-%pool = parpool; % Invoke workers
-%options = statset('UseParallel', 1);
-
-% Train an ECOC multiclass model
-fprintf('Training a muticlass model\n');
-Mdl = fitcecoc(X, Y, ...
+Mdl = fitcecoc(XTrain, yTrain, ...
     'Coding', Coding, ...
     'Learners', t, ...
-    'ClassNames',[1, 2, 3, 4], ...
-    'Verbose', 2);
+    'ClassNames',[1 2 3 4], ...
+    'Verbose', Verbose);
 
-% Cross validate the ECOC classifier using K-fold cross validation.
-fprintf('Cross validating with %d-Fold\n', K);
-CVMdl = crossval(Mdl, 'kfold', K);
+yPred = predict(Mdl, XTest, 'Verbose', Verbose);
 
-% Loss
-loss = kfoldLoss(CVMdl, 'lossfun', 'classiferror');
-fprintf('Loss %f\n', loss);
+predErr = sum(yPred ~= yTest) / length(yTest);
+ber = BER(4, yTest, yPred);
+fprintf('\nTesting error: %.2f%%, ber=%f\n\n', predErr * 100, ber);
+
+err = [predErr, ber];
+
+end

@@ -1,4 +1,4 @@
-function err = neuralNetwork(XTrain, yTrain, xTest, yTest)
+function err = neuralNetwork(XTrain, yTrain, XTest, yTest, coeff)
 
 fprintf('Training simple neural network..\n');
 
@@ -20,13 +20,10 @@ numSampToUse = opts.batchsize * floor( size(XTrain) / opts.batchsize);
 XTrain = XTrain(1:numSampToUse, :);
 yTrain = yTrain(1:numSampToUse);
 
-% normalize data
-[normXTrain, mu, sigma] = zscore(XTrain); % train, get mu and std
-Tl = reduceDimension(normXTrain);
-normXTrain = normXTrain * Tl;
+% Apply dimensionality reduction 
+XTrain = XTrain * coeff;
+XTest = XTest * coeff;
 
-normXTest = normalize(xTest, mu, sigma);  % normalize test data
-normXTest = normXTest * Tl;
 
 % prepare labels for NN
 LL = [1*(yTrain == 1), ...
@@ -35,15 +32,15 @@ LL = [1*(yTrain == 1), ...
       1*(yTrain == 4) ];  % first column, p(y=1)
                         % second column, p(y=2), etc
 
-nn = nnsetup([size(normXTrain, 2) 10 4]);
+nn = nnsetup([size(XTrain, 2) 10 4]);
 nn.learningRate = 2;                        
-[nn, L] = nntrain(nn, normXTrain, LL, opts);
+[nn, L] = nntrain(nn, XTrain, LL, opts);
 
 % to get the scores we need to do nnff (feed-forward)
 %  see for example nnpredict().
 % (This is a weird thing of this toolbox)
 nn.testing = 1;
-nn = nnff(nn, normXTest, zeros(size(normXTest, 1), nn.size(end)));
+nn = nnff(nn, XTest, zeros(size(XTest, 1), nn.size(end)));
 nn.testing = 0;
 
 
@@ -61,4 +58,3 @@ ber = BER(4, yTest, classVote);
 fprintf('\nTesting error: %.2f%%, ber=%f\n\n', predErr * 100, ber);
 err = [predErr, ber];
 end
-
