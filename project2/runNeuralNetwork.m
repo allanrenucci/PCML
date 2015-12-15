@@ -5,10 +5,8 @@ load train/train.mat;
 K = 2;
 
 X = train.X_hog;
-%sigma = std(X); Fuck up the result ?
-sigma = 1;
-[coeff, ~, mu] = reduceDimension(normalize(X, 0, sigma), 95);
-X = normalize(X, mu, sigma);
+X = normalize(X, mean(X), std(X));
+[coeff, ~, mu] = reduceDimension(X, 95);
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
     (neuralNetwork(xTrain, yTrain, xTest, yTest, coeff));
