@@ -4,9 +4,10 @@ load train/train.mat;
 
 K = 2;
 
-X = train.X_hog;
-X = normalize(X, mean(X), std(X));
-[coeff, ~, mu] = reduceDimension(X, 95);
+X = [train.X_hog, train.X_cnn];
+%X = normalize(X, mean(X), 1);
+X = zscore(X);
+coeff = reduceDimension(X, 95);
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
     (neuralNetwork(xTrain, yTrain, xTest, yTest, coeff));
