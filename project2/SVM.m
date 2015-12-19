@@ -4,7 +4,9 @@ function err = SVM(XTrain, yTrain, XTest, yTest)
 KernelFunction = 'gaussian'; % loss = 0.6
 %KernelFunction = 'linear'; % loss = 0.33
 Verbose = 2;
-Coding = 'onevsone';
+Coding = 'onevsall';
+options = statset('UseParallel', false);
+
 
 % Apply dimensionality reduction 
 [XTrain, mu, sigma] = zscore(XTrain);
@@ -18,19 +20,20 @@ Mdl = fitcecoc(XTrain, yTrain, ...
     'Coding', Coding, ...
     'Learners', t, ...
     'ClassNames',[1 2 3 4], ...
-    'Verbose', Verbose);
+    'Verbose', Verbose, ...
+    'Options', options);fitcecoc
 
-train.pred = predict(Mdl, XTrain, 'Verbose', Verbose);
-test.pred = predict(Mdl, XTest, 'Verbose', Verbose);
+trPred = predict(Mdl, XTrain, 'Verbose', Verbose);
+tePred = predict(Mdl, XTest, 'Verbose', Verbose);
 
-train.err = sum(train.pred ~= yTrain) / length(yTrain);
-test.err = sum(test.pred ~= yTest) / length(yTest);
+trErr = sum(trPred ~= yTrain) / length(yTrain);
+teErr = sum(tePred ~= yTest) / length(yTest);
 
-train.ber = BER(4, yTrain, train.pred);
-test.ber = BER(4, yTest, test.pred);
+trBer = BER(4, yTrain, trPred);
+teBer = BER(4, yTest, tePred);
 
-fprintf('\nTesting error: %.2f%%, ber=%f\n\n', test.err * 100, test.ber);
+fprintf('\nTesting error: %.2f%%, ber=%f\n\n', teErr * 100, teBer);
 
-err = [train.err, train.ber, test.err, test.ber];
+err = [trErr, trBer, teErr, teBer];
 
 end

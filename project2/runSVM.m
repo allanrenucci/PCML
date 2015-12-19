@@ -2,13 +2,13 @@ clearvars;
 
 load('train/train.mat');
 
-K = 4;
+K = 5;
 
 X = train.X_cnn;
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
     (SVM(xTrain, yTrain, xTest, yTest));
 
-options = statset('UseParallel', true);
+options = statset('UseParallel', false);
 
 errors = crossval(fun, X, train.y, 'kfold', K, 'Options', options);
