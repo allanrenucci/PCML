@@ -1,7 +1,7 @@
 function [] = cache(filename, X, retained)
 
-[coeff, score, mu] = reduceDimension(X, retained);
+[coeff, score, mu, explained] = reduceDimension(X, retained);
 
-save(filename, 'X', 'coeff', 'score', 'mu');
+save(filename, 'X', 'coeff', 'score', 'mu', 'explained');
 
 end

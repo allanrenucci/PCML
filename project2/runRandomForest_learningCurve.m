@@ -6,13 +6,11 @@ load 'out/3_concatenated_non_normalized_var95.mat';
 y = train.y;
 clear train;
 
-K = 10;
-
-options = statset('UseParallel', true);
-
+props = linspace(0.1, 0.9, 41);
+numTrees = 60;
 numFeatures = sqrt(size(X, 2));
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
-    (randomForest(xTrain, yTrain, xTest, yTest, 100, numFeatures, coeff));
+        (randomForest(xTrain, yTrain, xTest, yTest, numTrees, numFeatures, coeff));
 
-errors = crossval(fun, X, y, 'kfold', K, 'Options', options);
+learningCurve(fun, X, y, props);

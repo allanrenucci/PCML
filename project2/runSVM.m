@@ -4,7 +4,7 @@ load('train/train.mat');
 
 K = 5;
 
-X = train.X_cnn;
+X = [train.X_cnn train.X_hog];
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
     (SVM(xTrain, yTrain, xTest, yTest));

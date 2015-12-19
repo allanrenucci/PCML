@@ -1,5 +1,5 @@
-function [coeff, score, mu] = reduceDimension(M, retained)
-[coeff, score, ~, ~, explained, mu] = pca(M);
+function [coeff, score, mu, explained] = reduceDimension(M, retained)
+[coeff, score, ~, ~, explained, mu] = pca(M, 'Centered', false);
 
 % Percentage of the variance retained
 sum_explained = 0;

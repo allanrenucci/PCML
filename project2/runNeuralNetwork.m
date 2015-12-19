@@ -1,14 +1,17 @@
 clearvars;
 
-load train/train.mat;
+load 'train/train.mat';
+%load 'out/2_concatenated_std1_var100.mat';
+load 'out/1_concatenated_std1_var95.mat';
 
-K = 2;
+y = train.y;
+clear train;
 
-X = train.X_hog;
-X = normalize(X, mean(X), std(X));
-[coeff, ~, mu] = reduceDimension(X, 95);
+K = 5;
+
+options = statset('UseParallel', false);
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
     (neuralNetwork(xTrain, yTrain, xTest, yTest, coeff));
 
-errors = crossval(fun, X, train.y, 'kfold', K);
+errors = crossval(fun, X, y, 'kfold', K, 'Options', options);
