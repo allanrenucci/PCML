@@ -1,9 +1,16 @@
-function err = randomForest(XTrain, yTrain, XTest, yTest, forestSize, m_try)
+function err = randomForest(XTrain, yTrain, XTest, yTest, forestSize, m_try, coeff)
+
+options = statset('UseParallel', true);
+
+% Apply dimensionality reduction 
+XTrain = XTrain * coeff;
+XTest = XTest * coeff;
 
 % Train the TreeBagger (Decision Forest).
-B = TreeBagger(forestSize, XTrain, yTrain, ....
+B = TreeBagger(forestSize, XTrain, yTrain, ...
     'NumPrint', 10, ...
-    'NumPredictorsToSample', m_try);
+    'NumPredictorsToSample', m_try, ...
+    'Options', options);
 
 pred = str2double(B.predict(XTest));
 

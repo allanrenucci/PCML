@@ -1,10 +1,13 @@
 clearvars;
 
-load train/train.mat;
+load 'train/train.mat';
+load 'concatenated_std1.mat';
 
 K = 2;
 
-fun = @(xTrain, yTrain, xTest, yTest) ...
-    (randomForest(xTrain, yTrain, xTest, yTest, 200, 74));
+numFeatures = sqrt(size(X, 2));
 
-errors = crossval(fun, train.X_cnn, train.y, 'kfold', K);
+fun = @(xTrain, yTrain, xTest, yTest) ...
+    (randomForest(xTrain, yTrain, xTest, yTest, 200, numFeatures, coeff));
+
+errors = crossval(fun, X, train.y, 'kfold', K);

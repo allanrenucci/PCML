@@ -1,9 +1,7 @@
 function [] = cache(filename, X, retained)
 
-%sigma = std(X); Fuck up the result ?
-sigma = 1;
-[coeff, ~, mu] = reduceDimension(normalize(X, 0, sigma), retained);
+[coeff, score, mu] = reduceDimension(X, retained);
 
-save(filename, 'coeff', 'mu', 'sigma');
+save(filename, 'X', 'coeff', 'score', 'mu');
 
 end
