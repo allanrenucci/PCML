@@ -7,8 +7,7 @@ Verbose = 2;
 Coding = 'onevsall';
 options = statset('UseParallel', false);
 
-
-% Apply dimensionality reduction 
+% Normalize data
 [XTrain, mu, sigma] = zscore(XTrain);
 XTest = normalize(XTest, mu, sigma);
 
@@ -21,7 +20,7 @@ Mdl = fitcecoc(XTrain, yTrain, ...
     'Learners', t, ...
     'ClassNames',[1 2 3 4], ...
     'Verbose', Verbose, ...
-    'Options', options);fitcecoc
+    'Options', options);
 
 trPred = predict(Mdl, XTrain, 'Verbose', Verbose);
 tePred = predict(Mdl, XTest, 'Verbose', Verbose);
