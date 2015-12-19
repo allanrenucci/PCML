@@ -1,14 +1,14 @@
-function err = SVM(XTrain, yTrain, XTest, yTest, coeff)
+function err = SVM(XTrain, yTrain, XTest, yTest)
 
 % Constants
 KernelFunction = 'gaussian'; % loss = 0.6
 %KernelFunction = 'linear'; % loss = 0.33
 Verbose = 2;
-Coding = 'onevsall';
+Coding = 'onevsone';
 
 % Apply dimensionality reduction 
-XTrain = XTrain * coeff;
-XTest = XTest * coeff;
+[XTrain, mu, sigma] = zscore(XTrain);
+XTest = normalize(XTest, mu, sigma);
 
 t = templateSVM('Standardize' ,1 , ...
     'KernelFunction', KernelFunction, ...
@@ -20,12 +20,17 @@ Mdl = fitcecoc(XTrain, yTrain, ...
     'ClassNames',[1 2 3 4], ...
     'Verbose', Verbose);
 
-yPred = predict(Mdl, XTest, 'Verbose', Verbose);
+train.pred = predict(Mdl, XTrain, 'Verbose', Verbose);
+test.pred = predict(Mdl, XTest, 'Verbose', Verbose);
 
-predErr = sum(yPred ~= yTest) / length(yTest);
-ber = BER(4, yTest, yPred);
-fprintf('\nTesting error: %.2f%%, ber=%f\n\n', predErr * 100, ber);
+train.err = sum(train.pred ~= yTrain) / length(yTrain);
+test.err = sum(test.pred ~= yTest) / length(yTest);
 
-err = [predErr, ber];
+train.ber = BER(4, yTrain, train.pred);
+test.ber = BER(4, yTest, test.pred);
+
+fprintf('\nTesting error: %.2f%%, ber=%f\n\n', test.err * 100, test.ber);
+
+err = [train.err, train.ber, test.err, test.ber];
 
 end

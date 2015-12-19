@@ -2,15 +2,13 @@ clearvars;
 
 load('train/train.mat');
 
-K = 2;
+K = 4;
 
-X = train.X_hog;
-%sigma = std(X); Fuck up the result ?
-sigma = 1;
-[coeff, ~, mu] = reduceDimension(normalize(X, 0, sigma), 95);
-X = normalize(X, mu, sigma);
+X = train.X_cnn;
 
 fun = @(xTrain, yTrain, xTest, yTest) ...
-    (SVM(xTrain, yTrain, xTest, yTest, coeff));
+    (SVM(xTrain, yTrain, xTest, yTest));
 
-errors = crossval(fun, X, train.y, 'kfold', K);
+options = statset('UseParallel', true);
+
+errors = crossval(fun, X, train.y, 'kfold', K, 'Options', options);
