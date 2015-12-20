@@ -1,10 +1,10 @@
-function err = neuralNetwork(XTrain, yTrain, XTest, yTest, seed)
+function err = neuralNetworkAlternate(XTrain, yTrain, XTest, yTest, numNeurons, confidenceThreshold)
 
 % fprintf('Training simple neural network..\n');
 
 addpath(genpath('DeepLearnToolboxSilent'));
 
-rng(seed);  % fix seed, this    NN may be very sensitive to initialization
+rng(8339);  % fix seed, this    NN may be very sensitive to initialization
 
 % setup NN. The first layer needs to have number of features neurons,
 %  and the last layer the number of classes (here four).
@@ -32,7 +32,7 @@ LL = [1*(yTrain == 1), ...
       1*(yTrain == 4) ];  % first column, p(y=1)
                         % second column, p(y=2), etc
 
-nn = nnsetup([size(XTrain, 2) 10 4]);
+nn = nnsetup([size(XTrain, 2) numNeurons 4]);
 nn.learningRate = 2;                        
 [nn, L] = nntrain(nn, XTrain, LL, opts);
 
@@ -41,7 +41,9 @@ nn.testing = 1;
 nn = nnff(nn, XTrain, zeros(size(XTrain, 1), nn.size(end)));
 nn.testing = 0;
 nnPredTrain = nn.a{end};
-[~, classVoteTrain] = max(nnPredTrain, [], 2);
+% nnPredTrain = nnPredTrain(:, 1:3);
+[voteTrain, classVoteTrain] = max(nnPredTrain, [], 2);
+classVoteTrain(voteTrain < confidenceThreshold) = 4;
 %%%%
 
 
@@ -54,9 +56,13 @@ nn.testing = 0;
 
 % predict on the test set
 nnPredTest = nn.a{end};
+%nnPredTest = nnPredTest(:, 1:3);
 
 % get the most likely class
-[~, classVoteTest] = max(nnPredTest, [], 2);
+[voteTest, classVoteTest] = max(nnPredTest, [], 2);
+
+classVoteTest(voteTest < confidenceThreshold) = 4;
+
 
 % get overall error [NOTE!! this is not the BER, you have to write the code
 %                    to compute the BER!]
